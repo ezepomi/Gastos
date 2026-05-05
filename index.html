@@ -3,67 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalletTrack - Mi Billetera</title>
+    <title>WalletPro - Proyección Financiera</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .modal { transition: opacity 0.25s ease; border-radius: 2rem; }
+        body.modal-active { overflow-x: hidden; overflow-y: visible !important; }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans min-h-screen pb-10">
+<body class="bg-slate-50 font-sans min-h-screen pb-24">
 
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-b-[3rem] shadow-xl mb-8">
-        <h1 class="text-center text-sm font-light opacity-90 uppercase tracking-widest">Gasto Total Proyectado</h1>
-        <div id="total-general" class="text-center text-5xl font-extrabold my-3">$ 0.00</div>
-        <div class="flex justify-between mt-6 text-xs font-medium bg-white/10 p-3 rounded-2xl">
-            <span id="cotizacion-dolar"><i class="fas fa-chart-line mr-1"></i> Dólar Tarjeta: ...</span>
-            <span id="fecha-actual"></span>
+    <div class="bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 text-white p-8 rounded-b-[3rem] shadow-2xl mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <select id="selector-mes" onchange="cambiarMes()" class="bg-white/20 border-none text-white font-bold rounded-full px-4 py-2 outline-none">
+                </select>
+            <span id="cotizacion-dolar" class="text-xs bg-black/20 px-3 py-1 rounded-full">Dólar: ...</span>
         </div>
+        <h1 class="text-center text-sm font-light opacity-80 uppercase tracking-widest">Total a pagar este mes</h1>
+        <div id="total-mensual" class="text-center text-5xl font-black my-2">$ 0,00</div>
     </div>
 
     <div class="max-w-md mx-auto px-4">
         
-        <div class="bg-white p-6 rounded-3xl shadow-md mb-8 border border-gray-100">
-            <h2 class="text-lg font-bold mb-5 text-gray-800 flex items-center">
-                <i class="fas fa-plus-circle text-blue-500 mr-2"></i> Nuevo Gasto
-            </h2>
-            <div class="space-y-4">
-                <input type="text" id="nombre-gasto" placeholder="¿Qué compraste?" class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 transition-all border-none text-gray-700">
+        <div class="bg-white p-6 rounded-[2.5rem] shadow-xl mb-8 border border-gray-100">
+            <h2 class="text-lg font-bold mb-4 text-gray-800">Registrar Nuevo Gasto</h2>
+            <div class="space-y-3">
+                <input type="text" id="nombre-gasto" placeholder="Nombre (Ej: Netflix, Zapatillas)" class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 border-none">
                 
-                <div class="flex gap-3">
-                    <input type="number" id="monto-gasto" placeholder="Monto" class="w-2/3 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 border-none">
+                <div class="flex gap-2">
+                    <input type="number" id="monto-cuota" placeholder="Monto cuota/mes" class="w-2/3 p-4 bg-gray-50 rounded-2xl outline-none border-none">
                     <select id="moneda-gasto" class="w-1/3 p-4 bg-gray-50 rounded-2xl outline-none border-none font-bold text-blue-600">
                         <option value="ARS">ARS</option>
                         <option value="USD">USD</option>
                     </select>
                 </div>
 
-                <div class="flex items-center gap-3 p-2">
-                    <input type="checkbox" id="es-cuota" onchange="toggleCuotas()" class="w-5 h-5 text-blue-600 rounded">
-                    <label for="es-cuota" class="text-sm text-gray-600 font-medium">Es un gasto en cuotas</label>
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold uppercase text-gray-500">
+                    <button onclick="setTipo('servicio')" id="btn-servicio" class="p-3 rounded-xl border-2 border-blue-100 bg-blue-50 text-blue-600">Servicio Fijo</button>
+                    <button onclick="setTipo('cuota')" id="btn-cuota" class="p-3 rounded-xl border-2 border-gray-100 bg-white">En Cuotas</button>
                 </div>
 
-                <div id="panel-cuotas" class="hidden flex gap-3 animate-fade-in">
-                    <input type="number" id="cuota-actual" placeholder="N° Cuota" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none">
-                    <input type="number" id="cuotas-totales" placeholder="Total" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none">
+                <div id="panel-interes" class="hidden space-y-3 animate-fade-in">
+                    <div class="flex gap-2">
+                        <input type="number" id="cuota-n" placeholder="N° Cuota hoy" class="w-1/2 p-4 bg-gray-100 rounded-2xl border-none">
+                        <input type="number" id="cuota-total" placeholder="Total cuotas" class="w-1/2 p-4 bg-gray-100 rounded-2xl border-none">
+                    </div>
+                    <input type="number" id="precio-contado" placeholder="Precio Total Contado (para interés)" class="w-full p-4 bg-gray-100 rounded-2xl border-none">
                 </div>
 
-                <button onclick="agregarGasto()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95">
-                    Guardar Gasto
+                <button onclick="guardarGasto()" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition-all transform active:scale-95 mt-2">
+                    Confirmar Gasto
                 </button>
             </div>
         </div>
 
-        <div class="flex justify-between items-center mb-4 px-2">
-            <h2 class="text-gray-400 font-bold text-xs uppercase tracking-widest">Historial Reciente</h2>
-            <button onclick="borrarTodo()" class="text-red-400 text-xs font-medium hover:underline">Limpiar todo</button>
-        </div>
+        <h2 id="titulo-lista" class="text-gray-400 font-bold text-xs uppercase tracking-widest mb-4 px-2">Gastos de este mes</h2>
         <div id="lista-gastos" class="space-y-4">
             </div>
     </div>
 
+    <div id="modal-detalle" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 relative">
+            <button onclick="cerrarModal()" class="absolute top-6 right-6 text-gray-400"><i class="fas fa-times"></i></button>
+            <div id="contenido-modal"></div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIGURACIÓN QUE ME PASASTE
         const firebaseConfig = {
             apiKey: "AIzaSyByzZ_78iII_TUKnk8xfU75cdhWsj12sQY",
             authDomain: "misgastos-434d2.firebaseapp.com",
@@ -77,73 +86,166 @@
         const db = getFirestore(app);
         const gastosRef = collection(db, "gastos");
 
+        let tipoSeleccionado = 'servicio';
         let valorDolar = 0;
+        let mesActualVista = new Date().getMonth();
+        let anioActualVista = new Date().getFullYear();
+        let listadoGastosGlobal = [];
 
-        // Obtener Dólar Tarjeta
-        async function actualizarDolar() {
-            try {
-                const res = await fetch('https://dolarapi.com/v1/dolares/tarjeta');
-                const data = await res.json();
-                valorDolar = data.venta;
-                document.getElementById('cotizacion-dolar').innerHTML = `<i class="fas fa-credit-card mr-1"></i> Dólar Tarjeta: $${valorDolar}`;
-            } catch (e) { console.error("Error API Dólar"); }
+        // Inicializar selector de meses (Hoy + 12 meses)
+        const selector = document.getElementById('selector-mes');
+        for(let i = 0; i < 13; i++) {
+            let d = new Date();
+            d.setMonth(d.getMonth() + i);
+            let opt = document.createElement('option');
+            opt.value = `${d.getMonth()}-${d.getFullYear()}`;
+            opt.innerText = d.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+            selector.appendChild(opt);
         }
 
-        // Agregar Gasto a Firebase
-        window.agregarGasto = async () => {
-            const nombre = document.getElementById('nombre-gasto').value;
-            const monto = parseFloat(document.getElementById('monto-gasto').value);
-            const moneda = document.getElementById('moneda-gasto').value;
-            const esCuota = document.getElementById('es-cuota').checked;
-
-            if(!nombre || !monto) return alert("Por favor, completa los campos");
-
-            await addDoc(gastosRef, {
-                nombre, monto, moneda, esCuota,
-                cuotaActual: esCuota ? document.getElementById('cuota-actual').value : null,
-                cuotasTotales: esCuota ? document.getElementById('cuotas-totales').value : null,
-                fecha: Date.now()
-            });
-
-            document.getElementById('nombre-gasto').value = '';
-            document.getElementById('monto-gasto').value = '';
+        window.setTipo = (t) => {
+            tipoSeleccionado = t;
+            document.getElementById('btn-servicio').className = t === 'servicio' ? 'p-3 rounded-xl border-2 border-blue-100 bg-blue-50 text-blue-600' : 'p-3 rounded-xl border-2 border-gray-100 bg-white';
+            document.getElementById('btn-cuota').className = t === 'cuota' ? 'p-3 rounded-xl border-2 border-blue-100 bg-blue-50 text-blue-600' : 'p-3 rounded-xl border-2 border-gray-100 bg-white';
+            document.getElementById('panel-interes').classList.toggle('hidden', t !== 'cuota');
         };
 
-        // Escuchar datos de Firebase en tiempo real
-        const q = query(gastosRef, orderBy("fecha", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const lista = document.getElementById('lista-gastos');
-            const totalDisplay = document.getElementById('total-general');
-            lista.innerHTML = '';
-            let totalARS = 0;
+        window.guardarGasto = async () => {
+            const nombre = document.getElementById('nombre-gasto').value;
+            const monto = parseFloat(document.getElementById('monto-cuota').value);
+            const moneda = document.getElementById('moneda-gasto').value;
 
-            snapshot.forEach((doc) => {
-                const g = doc.data();
-                const montoConvertido = g.moneda === 'USD' ? g.monto * valorDolar : g.monto;
-                totalARS += montoConvertido;
+            if(!nombre || !monto) return alert("Completa los datos básicos");
 
-                lista.innerHTML += `
-                    <div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-gray-50">
-                        <div>
-                            <p class="font-bold text-gray-800">${g.nombre}</p>
-                            ${g.esCuota ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">CUOTA ${g.cuotaActual}/${g.cuotasTotales}</span>` : '<span class="text-[10px] text-gray-400">PAGO ÚNICO</span>'}
-                        </div>
-                        <div class="text-right">
-                            <p class="font-black text-gray-900">${g.moneda} ${g.monto.toLocaleString()}</p>
-                            <p class="text-[10px] text-gray-400 font-medium">ARS $${montoConvertido.toLocaleString()}</p>
-                        </div>
-                    </div>
-                `;
-            });
-            totalDisplay.innerText = `$ ${totalARS.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+            const nuevoGasto = {
+                nombre,
+                montoCuota: monto,
+                moneda,
+                tipo: tipoSeleccionado,
+                fechaCreacion: Date.now(),
+                mesInicio: new Date().getMonth(),
+                anioInicio: new Date().getFullYear(),
+                // Campos de cuotas
+                cuotaActualEnInicio: tipoSeleccionado === 'cuota' ? parseInt(document.getElementById('cuota-n').value) : 1,
+                cuotasTotales: tipoSeleccionado === 'cuota' ? parseInt(document.getElementById('cuotas-totales')?.value || 120) : 120, // 120 meses para servicios
+                precioContado: parseFloat(document.getElementById('precio-contado').value) || 0
+            };
+
+            await addDoc(gastosRef, nuevoGasto);
+            alert("Gasto registrado!");
+            limpiarForm();
+        };
+
+        onSnapshot(gastosRef, (snapshot) => {
+            listadoGastosGlobal = [];
+            snapshot.forEach(doc => listadoGastosGlobal.push({id: doc.id, ...doc.data()}));
+            renderizar();
         });
 
-        window.toggleCuotas = () => {
-            const check = document.getElementById('es-cuota');
-            document.getElementById('panel-cuotas').classList.toggle('hidden', !check.checked);
+        window.cambiarMes = () => {
+            const [m, a] = selector.value.split('-');
+            mesActualVista = parseInt(m);
+            anioActualVista = parseInt(a);
+            renderizar();
         };
 
-        document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
+        function renderizar() {
+            const listaUI = document.getElementById('lista-gastos');
+            const totalUI = document.getElementById('total-mensual');
+            listaUI.innerHTML = '';
+            let totalMesARS = 0;
+
+            listadoGastosGlobal.forEach(g => {
+                // Lógica de Proyección
+                const mesesDesdeInicio = (anioActualVista - g.anioInicio) * 12 + (mesActualVista - g.mesInicio);
+                const cuotaHoy = g.cuotaActualEnInicio + mesesDesdeInicio;
+
+                // ¿Corresponde mostrar este gasto en este mes?
+                if (mesesDesdeInicio >= 0 && cuotaHoy <= g.cuotasTotales) {
+                    const montoARS = g.moneda === 'USD' ? g.montoCuota * valorDolar : g.montoCuota;
+                    totalMesARS += montoARS;
+
+                    listaUI.innerHTML += `
+                        <div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-gray-100 hover:shadow-md transition-all" onclick="verDetalle('${g.id}', ${cuotaHoy})">
+                            <div>
+                                <p class="font-bold text-gray-800">${g.nombre}</p>
+                                <span class="text-[10px] bg-indigo-50 text-indigo-500 px-2 py-1 rounded-full font-bold">
+                                    ${g.tipo === 'servicio' ? 'SERVICIO' : `CUOTA ${cuotaHoy}/${g.cuotasTotales}`}
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-gray-900">${g.moneda} ${g.montoCuota.toLocaleString()}</p>
+                                <p class="text-[10px] text-gray-400">≈ ARS ${montoARS.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            totalUI.innerText = `$ ${totalMesARS.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+        }
+
+        window.verDetalle = (id, cuotaActual) => {
+            const g = listadoGastosGlobal.find(x => x.id === id);
+            const totalPlan = g.montoCuota * g.cuotasTotales;
+            const interesTotal = g.precioContado > 0 ? totalPlan - g.precioContado : 0;
+            const pctInteres = g.precioContado > 0 ? (interesTotal / g.precioContado) * 100 : 0;
+
+            document.getElementById('contenido-modal').innerHTML = `
+                <h3 class="text-2xl font-black text-gray-800 mb-2">${g.nombre}</h3>
+                <p class="text-sm text-gray-400 mb-6 uppercase tracking-widest">${g.tipo}</p>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-500">Monto de la cuota:</span>
+                        <span class="font-bold">${g.moneda} ${g.montoCuota}</span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-500">Cuotas totales:</span>
+                        <span class="font-bold">${g.cuotasTotales}</span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2 text-blue-600">
+                        <span class="">Total a pagar fin de plan:</span>
+                        <span class="font-bold">${g.moneda} ${totalPlan.toLocaleString()}</span>
+                    </div>
+                    ${g.precioContado > 0 ? `
+                        <div class="bg-red-50 p-4 rounded-2xl mt-4">
+                            <p class="text-xs text-red-400 font-bold uppercase">Análisis de Interés</p>
+                            <p class="text-lg font-black text-red-600">$ ${interesTotal.toLocaleString()} extra</p>
+                            <p class="text-xs text-red-500">Estás pagando un ${pctInteres.toFixed(1)}% de recargo.</p>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <button onclick="borrarGasto('${g.id}')" class="w-full mt-8 text-red-400 text-xs font-bold uppercase tracking-widest hover:text-red-600">Eliminar este gasto permanente</button>
+            `;
+            document.getElementById('modal-detalle').classList.remove('hidden');
+        };
+
+        window.cerrarModal = () => document.getElementById('modal-detalle').classList.add('hidden');
+
+        window.borrarGasto = async (id) => {
+            if(confirm("¿Seguro quieres eliminar este gasto de todos los meses?")) {
+                await deleteDoc(doc(db, "gastos", id));
+                cerrarModal();
+            }
+        }
+
+        async function actualizarDolar() {
+            const res = await fetch('https://dolarapi.com/v1/dolares/tarjeta');
+            const data = await res.json();
+            valorDolar = data.venta;
+            document.getElementById('cotizacion-dolar').innerText = `Dólar Tarjeta: $${valorDolar}`;
+            renderizar();
+        }
+
+        function limpiarForm() {
+            document.getElementById('nombre-gasto').value = '';
+            document.getElementById('monto-cuota').value = '';
+            document.getElementById('precio-contado').value = '';
+            setTipo('servicio');
+        }
+
         actualizarDolar();
     </script>
 </body>
