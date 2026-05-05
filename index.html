@@ -3,138 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WalletTrack - Mis Gastos</title>
+    <title>WalletTrack - Mi Billetera</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-slate-50 font-sans min-h-screen">
+<body class="bg-slate-50 font-sans min-h-screen pb-10">
 
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-b-3xl shadow-lg mb-6">
-        <h1 class="text-center text-sm font-light opacity-80">Total Mensual Proyectado (ARS)</h1>
-        <div id="total-general" class="text-center text-4xl font-bold my-2">$ 0.00</div>
-        <div class="flex justify-between mt-4 text-xs">
-            <span id="cotizacion-dolar">Dólar Tarjeta: Cargando...</span>
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-b-[3rem] shadow-xl mb-8">
+        <h1 class="text-center text-sm font-light opacity-90 uppercase tracking-widest">Gasto Total Proyectado</h1>
+        <div id="total-general" class="text-center text-5xl font-extrabold my-3">$ 0.00</div>
+        <div class="flex justify-between mt-6 text-xs font-medium bg-white/10 p-3 rounded-2xl">
+            <span id="cotizacion-dolar"><i class="fas fa-chart-line mr-1"></i> Dólar Tarjeta: ...</span>
             <span id="fecha-actual"></span>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 pb-20">
+    <div class="max-w-md mx-auto px-4">
         
-        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6">
-            <h2 class="text-lg font-semibold mb-4 text-gray-700">Registrar Gasto</h2>
+        <div class="bg-white p-6 rounded-3xl shadow-md mb-8 border border-gray-100">
+            <h2 class="text-lg font-bold mb-5 text-gray-800 flex items-center">
+                <i class="fas fa-plus-circle text-blue-500 mr-2"></i> Nuevo Gasto
+            </h2>
             <div class="space-y-4">
-                <input type="text" id="nombre-gasto" placeholder="¿En qué gastaste?" class="w-full p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-blue-400">
+                <input type="text" id="nombre-gasto" placeholder="¿Qué compraste?" class="w-full p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 transition-all border-none text-gray-700">
                 
-                <div class="flex gap-2">
-                    <input type="number" id="monto-gasto" placeholder="Monto" class="w-2/3 p-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-blue-400">
-                    <select id="moneda-gasto" class="w-1/3 p-3 bg-gray-50 rounded-xl outline-none">
+                <div class="flex gap-3">
+                    <input type="number" id="monto-gasto" placeholder="Monto" class="w-2/3 p-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-blue-400 border-none">
+                    <select id="moneda-gasto" class="w-1/3 p-4 bg-gray-50 rounded-2xl outline-none border-none font-bold text-blue-600">
                         <option value="ARS">ARS</option>
                         <option value="USD">USD</option>
                     </select>
                 </div>
 
-                <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <input type="checkbox" id="es-cuota" onchange="toggleCuotas()">
-                    <label for="es-cuota">¿Es en cuotas?</label>
+                <div class="flex items-center gap-3 p-2">
+                    <input type="checkbox" id="es-cuota" onchange="toggleCuotas()" class="w-5 h-5 text-blue-600 rounded">
+                    <label for="es-cuota" class="text-sm text-gray-600 font-medium">Es un gasto en cuotas</label>
                 </div>
 
-                <div id="panel-cuotas" class="hidden flex gap-2">
-                    <input type="number" id="cuota-actual" placeholder="N° Cuota" class="w-1/2 p-3 bg-gray-50 rounded-xl outline-none">
-                    <input type="number" id="cuotas-totales" placeholder="Total Cuotas" class="w-1/2 p-3 bg-gray-50 rounded-xl outline-none">
+                <div id="panel-cuotas" class="hidden flex gap-3 animate-fade-in">
+                    <input type="number" id="cuota-actual" placeholder="N° Cuota" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none">
+                    <input type="number" id="cuotas-totales" placeholder="Total" class="w-1/2 p-4 bg-gray-50 rounded-2xl outline-none border-none">
                 </div>
 
-                <button onclick="agregarGasto()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">
-                    Agregar Gasto
+                <button onclick="agregarGasto()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-95">
+                    Guardar Gasto
                 </button>
             </div>
         </div>
 
-        <h2 class="text-gray-500 font-medium mb-3 ml-2 text-sm uppercase tracking-wider">Historial de Gastos</h2>
-        <div id="lista-gastos" class="space-y-3">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="text-gray-400 font-bold text-xs uppercase tracking-widest">Historial Reciente</h2>
+            <button onclick="borrarTodo()" class="text-red-400 text-xs font-medium hover:underline">Limpiar todo</button>
+        </div>
+        <div id="lista-gastos" class="space-y-4">
             </div>
     </div>
 
-    <script>
-        let gastos = JSON.parse(localStorage.getItem('mis_gastos')) || [];
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIGURACIÓN QUE ME PASASTE
+        const firebaseConfig = {
+            apiKey: "AIzaSyByzZ_78iII_TUKnk8xfU75cdhWsj12sQY",
+            authDomain: "misgastos-434d2.firebaseapp.com",
+            projectId: "misgastos-434d2",
+            storageBucket: "misgastos-434d2.firebasestorage.app",
+            messagingSenderId: "496664705106",
+            appId: "1:496664705106:web:13f72cd65cc1d137ba078b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const gastosRef = collection(db, "gastos");
+
         let valorDolar = 0;
 
-        // 1. Obtener Dólar Tarjeta en tiempo real
+        // Obtener Dólar Tarjeta
         async function actualizarDolar() {
             try {
                 const res = await fetch('https://dolarapi.com/v1/dolares/tarjeta');
                 const data = await res.json();
                 valorDolar = data.venta;
-                document.getElementById('cotizacion-dolar').innerText = `Dólar Tarjeta: $${valorDolar}`;
-                renderizarGastos();
-            } catch (e) {
-                console.error("Error al obtener dólar");
-            }
+                document.getElementById('cotizacion-dolar').innerHTML = `<i class="fas fa-credit-card mr-1"></i> Dólar Tarjeta: $${valorDolar}`;
+            } catch (e) { console.error("Error API Dólar"); }
         }
 
-        function toggleCuotas() {
-            const check = document.getElementById('es-cuota');
-            document.getElementById('panel-cuotas').classList.toggle('hidden', !check.checked);
-        }
-
-        function agregarGasto() {
+        // Agregar Gasto a Firebase
+        window.agregarGasto = async () => {
             const nombre = document.getElementById('nombre-gasto').value;
             const monto = parseFloat(document.getElementById('monto-gasto').value);
             const moneda = document.getElementById('moneda-gasto').value;
             const esCuota = document.getElementById('es-cuota').checked;
-            
-            if(!nombre || !monto) return alert("Completa los datos");
 
-            const nuevoGasto = {
-                id: Date.now(),
-                nombre,
-                monto,
-                moneda,
-                esCuota,
+            if(!nombre || !monto) return alert("Por favor, completa los campos");
+
+            await addDoc(gastosRef, {
+                nombre, monto, moneda, esCuota,
                 cuotaActual: esCuota ? document.getElementById('cuota-actual').value : null,
-                cuotasTotales: esCuota ? document.getElementById('cuotas-totales').value : null
-            };
+                cuotasTotales: esCuota ? document.getElementById('cuotas-totales').value : null,
+                fecha: Date.now()
+            });
 
-            gastos.push(nuevoGasto);
-            localStorage.setItem('mis_gastos', JSON.stringify(gastos));
-            limpiarFormulario();
-            renderizarGastos();
-        }
+            document.getElementById('nombre-gasto').value = '';
+            document.getElementById('monto-gasto').value = '';
+        };
 
-        function renderizarGastos() {
+        // Escuchar datos de Firebase en tiempo real
+        const q = query(gastosRef, orderBy("fecha", "desc"));
+        onSnapshot(q, (snapshot) => {
             const lista = document.getElementById('lista-gastos');
             const totalDisplay = document.getElementById('total-general');
             lista.innerHTML = '';
             let totalARS = 0;
 
-            gastos.forEach(g => {
+            snapshot.forEach((doc) => {
+                const g = doc.data();
                 const montoConvertido = g.moneda === 'USD' ? g.monto * valorDolar : g.monto;
                 totalARS += montoConvertido;
 
-                const cuotasHTML = g.esCuota ? `<span class="text-xs text-blue-500 block">Cuota ${g.cuotaActual}/${g.cuotasTotales}</span>` : '';
-
                 lista.innerHTML += `
-                    <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-gray-50">
                         <div>
-                            <p class="font-medium text-gray-800">${g.nombre}</p>
-                            ${cuotasHTML}
+                            <p class="font-bold text-gray-800">${g.nombre}</p>
+                            ${g.esCuota ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold">CUOTA ${g.cuotaActual}/${g.cuotasTotales}</span>` : '<span class="text-[10px] text-gray-400">PAGO ÚNICO</span>'}
                         </div>
                         <div class="text-right">
-                            <p class="font-bold text-gray-900">${g.moneda} ${g.monto.toLocaleString()}</p>
-                            <p class="text-[10px] text-gray-400">≈ ARS $${montoConvertido.toLocaleString()}</p>
+                            <p class="font-black text-gray-900">${g.moneda} ${g.monto.toLocaleString()}</p>
+                            <p class="text-[10px] text-gray-400 font-medium">ARS $${montoConvertido.toLocaleString()}</p>
                         </div>
                     </div>
                 `;
             });
+            totalDisplay.innerText = `$ ${totalARS.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+        });
 
-            totalDisplay.innerText = `$ ${totalARS.toLocaleString()}`;
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('nombre-gasto').value = '';
-            document.getElementById('monto-gasto').value = '';
-            document.getElementById('es-cuota').checked = false;
-            toggleCuotas();
-        }
+        window.toggleCuotas = () => {
+            const check = document.getElementById('es-cuota');
+            document.getElementById('panel-cuotas').classList.toggle('hidden', !check.checked);
+        };
 
         document.getElementById('fecha-actual').innerText = new Date().toLocaleDateString();
         actualizarDolar();
